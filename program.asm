@@ -7,6 +7,18 @@ start: jmp main
 
 password_leight equ 8
 
+; ____________________________________________________________________________________________________________________________________
+
+
+; ======================  check_password (void) ======================
+;                       
+; 	entery:    void
+; 	exit:      ax - checking password flag                                   
+; 	expected:  ---
+;	destr:     ax, bx, cx, dx, di, si
+;
+; ====================================================================
+
 check_password proc
 
         push bx
@@ -28,10 +40,10 @@ check_password proc
 
         sub bp, 2               ; put pointer on first allocated memory
 
-        clean_loop:
+        clean_loop:             ; loop
         mov [bp], ax  
         sub bp, 2
-        loop clean_loop
+        loop clean_loop         ; clean allocated memory
 
         xor di, di
 
@@ -98,17 +110,17 @@ check_password proc
 
         loop check_loop
 
-        mov bp, sp
-        add bp, 10
-        mov word ptr [bp], 1
+        mov bp, sp              ; if correct password
+        add bp, 10              
+        mov word ptr [bp], 1    ; put correct flag
 
         ; ======= get regs ========
 
         get_regs:
 
-        mov bp, sp
-        add bp, 10
-        mov ax, [bp]
+        mov bp, sp         
+        add bp, 10         ; get flag adres
+        mov ax, [bp]       ; put in ax flag
         
         add sp, 12
 
@@ -123,7 +135,10 @@ check_password proc
 
 check_password endp
 
-        
+
+; _______________________________________________________________________________________________________________________________________
+      
+
 main:
 
         mov dx, offset enter_password
