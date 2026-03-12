@@ -6,7 +6,6 @@ org 100h
 start: jmp main
 
 password_leight equ 8
-max_leight      equ 8
 
 check_password proc
 
@@ -15,18 +14,19 @@ check_password proc
         push dx
         push bp
         push di
+        push si
 
         ; ======= save regs =======
 
         mov bp, sp
-        sub sp, 10
+        sub sp, 12
 
-        mov cx, 5         ; counter
+        mov cx, 6         ; counter
         xor ax, ax     
 
         ; ======== reset memory ========
 
-        sub bp, 2
+        sub bp, 2               ; put pointer on first allocated memory
 
         clean_loop:
         mov [bp], ax  
@@ -35,14 +35,17 @@ check_password proc
 
         xor di, di
 
-        add bp, 4
+        add bp, 2               ; put pointer on 
+        mov si, bp
+        mov word ptr [si], 8
+        add bp, 2
 
         ; ========= loop input password ==========
 
         loop_cp:
 
-        cmp di, max_leight
-        jge end_input       ; if size = 8
+        cmp di, [si]
+        jg end_input       ; if size = 8
 
         mov ah, 01h         ; symbol input
         int 21h
@@ -96,6 +99,7 @@ check_password proc
         loop check_loop
 
         mov bp, sp
+        add bp, 10
         mov word ptr [bp], 1
 
         ; ======= get regs ========
@@ -103,10 +107,12 @@ check_password proc
         get_regs:
 
         mov bp, sp
+        add bp, 10
         mov ax, [bp]
         
-        add sp, 10
+        add sp, 12
 
+        pop si
         pop di
         pop bp
         pop dx
