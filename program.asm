@@ -10,54 +10,32 @@ password_leight equ 8
 ; ____________________________________________________________________________________________________________________________________
 
 
-; ======================  check_password (void) ======================
+; ======================  input_password (void) ======================
 ;                       
 ; 	entery:    void
 ; 	exit:      ax - checking password flag                                   
 ; 	expected:  ---
-;	destr:     ax, bx, cx, dx, di, si
+;	destr:     ax, bx, cx, dx, di
 ;
 ; ====================================================================
 
-check_password proc
+input_password proc
 
         push bx
         push cx
-        push dx
-        push bp
         push di
-        push si
 
         ; ======= save regs =======
 
-        mov bp, sp
-        sub sp, 12
-
-        mov cx, 6         ; counter
-        xor ax, ax     
-
-        ; ======== reset memory ========
-
-        sub bp, 2               ; put pointer on first allocated memory
-
-        clean_loop:             ; loop
-        mov [bp], ax  
-        sub bp, 2
-        loop clean_loop         ; clean allocated memory
-
+        mov bx, offset user_password
         xor di, di
-
-        add bp, 2               ; put pointer on 
-        mov si, bp
-        mov word ptr [si], 8
-        add bp, 2
 
         ; ========= loop input password ==========
 
-        loop_cp:
+        loop_ip:
 
-        cmp di, [si]
-        jg end_input       ; if size = 8
+        cmp di, 8
+        jg get_regs         ; if size = 8
 
         mov ah, 01h         ; symbol input
         int 21h
@@ -65,76 +43,112 @@ check_password proc
         cmp al, 8           ; if backspace
         jne not_backspace
 
-        dec di
-        dec bp
+        cmp di, 0           ; if password empty symbols
+        je loop_ip
 
-        jmp loop_cp
+        dec di
+        dec bx
+
+        jmp loop_ip
 
         ; ======== if not backspace ========
 
         not_backspace:
 
-        cmp al, 13              ; if enter
-        je end_input            ; end input
+        ; cmp al, ' '            ; if space
+        ; jne not_space
 
-        mov [bp], al
+        ; inc di
+        ; jmp loop_ip
+
+        ; not_space:
+
+        cmp al, 13             ; if enter
+        je get_regs            ; end input
+
+        mov [bx], al
 
         inc di
-        inc bp
-
-        jmp loop_cp
-
-        ; ======= end password input =======
-
-        end_input:
-
-        cmp di, password_leight        ; if another size
-        jne get_regs
-
-        mov cx, password_leight
-        mov bx, offset password
-
-        mov bp, sp
-        add bp, 2
-
-        check_loop:
-
-        mov ah, [bx]
-        mov al, [bp]
-
         inc bx
-        inc bp
-        
-        cmp ah, al
-        jne get_regs
 
-        loop check_loop
-
-        mov bp, sp              ; if correct password
-        add bp, 10              
-        mov word ptr [bp], 1    ; put correct flag
+        jmp loop_ip
 
         ; ======= get regs ========
 
         get_regs:
 
-        mov bp, sp         
-        add bp, 10         ; get flag adres
-        mov ax, [bp]       ; put in ax flag
-        
-        add sp, 12
-
-        pop si
         pop di
-        pop bp
-        pop dx
         pop cx
         pop bx
 
         ret
 
-check_password endp
+input_password endp
 
+
+; ____________________________________________________________________________________________________________________________________
+
+
+; ======================  check_password (void) ======================
+;                       
+; 	entery:    void
+; 	exit:      ax - checking password flag                                   
+; 	expected:  ---
+;	destr:     ax, bx, cx, di
+;
+; ====================================================================
+
+check_password proc
+
+        push ax
+        push bx
+        push cx
+        push di
+
+        ; ======= save regs =======
+
+        mov bx, offset user_password
+        mov di, offset password
+        mov cx, 8
+
+        ; ======== loop =======
+
+        loop_cp:
+
+        cmp cx, 0
+        je end_loop_cp
+
+        mov al, [bx]
+        xor al, 3fh
+
+        cmp al, [di]
+        jne end_check
+        
+        inc di
+        inc bx
+        dec cx
+
+        jmp loop_cp
+
+        ; ======== end loop =======
+
+        end_loop_cp:
+
+        mov bx, offset correct_flag
+        mov byte ptr [bx], 1
+
+        ; ======= get regs ========
+
+        end_check:
+
+        pop di
+        pop cx
+        pop bx
+        pop ax
+
+        ret
+
+check_password endp
 
 ; _______________________________________________________________________________________________________________________________________
       
@@ -145,10 +159,13 @@ main:
         mov ah, 09h
         int 21h
 
+        call input_password
         call check_password
 
-        cmp ax, 0
-        jne correct
+        mov bx, offset correct_flag
+
+        cmp byte ptr [bx], 1
+        je correct
 
         mov dx, offset incorect_password
 
@@ -164,8 +181,7 @@ main:
         int 21h
 
         mov ax, 4C00h
-		int 21h 
-
+        int 21h 
 
 
 ; _________________________________________________________________________________________________________________________________________________
@@ -173,16 +189,19 @@ main:
 
 
 ; ======================================================================
-; 	      		 	            data
+; 	      		 	   data
 ; ======================================================================
 
+user_password db 8 dup (0)
 
-enter_password db 'enter_password: $'
+correct_flag db 0
+
+password db 0eh, 5eh, 0dh, 5dh, 0ch, 5ch, 0bh, 5bh
+
+enter_password db 'enter password: $'
 
 success db 13, 10, 'success$'
 
 incorect_password db 13, 10, 'incorect password$'
-
-password db '1a2b3c4d'
 
 end start
