@@ -4,7 +4,7 @@
 
 #define MAIN_MENU    0
 #define PATCHER      1
-#define SUCCESS_PTCH  2
+#define SUCCESS_PTCH  5
 #define SUCCESS_UNPTCH 3
 
 #define GO_PATCH_BTN 1
@@ -225,7 +225,7 @@ int bin_patch(const char* filename, int *nextScreen)
             *nextScreen = MAIN_MENU;
             return 1;
         }
-        
+
         if (is_button_clicked(&btn3)) 
         {
             *nextScreen = EXIT_BTN;
