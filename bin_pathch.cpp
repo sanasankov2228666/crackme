@@ -13,6 +13,9 @@
 #define YES_UNPATCH  4
 #define RET_MENU     3
 
+#define WINDOW_L 915
+#define WINDOW_H 592
+
 #define ORIG_HASH      5944380004466289632
 #define PATHCED_HASH   7196638112475397537
 
@@ -61,8 +64,8 @@ int main(int argc, char *argv[])
 
     char* filename = argv[1];
 
-    txCreateWindow(915, 592);
-    txBegin();
+    txCreateWindow (WINDOW_L, WINDOW_H);
+    txBegin ();
 
     HDC back = txLoadImage("frames/hacker0001.bmp");
     
@@ -119,6 +122,7 @@ int main(int argc, char *argv[])
 
     txDeleteDC(back);
     txEnd();
+
     return 0;
 }
 
@@ -128,16 +132,16 @@ int main(int argc, char *argv[])
 
 int main_menu()
 {
-    static Button btn1 = create_button(257, 420, 657, 500, TX_GREEN, "Patch file");
-    static Button btn2 = create_button(815, 20, 895, 60, TX_RED, "EXIT");
+    static Button btn1 = create_button (257, 420, 657, 500, TX_GREEN, "Patch file");
+    static Button btn2 = create_button (815, 20, 895, 60, TX_RED, "EXIT");
 
-    draw_button(&btn1);
-    draw_button(&btn2);
+    draw_button (&btn1);
+    draw_button (&btn2);
 
-    draw_centered_text("BINARY PATCHER", 100, 72, TX_GREEN);
+    draw_centered_text ("BINARY PATCHER", 100, 72, TX_GREEN);
 
-    if (is_button_clicked(&btn1)) return GO_PATCH_BTN;
-    if (is_button_clicked(&btn2)) return EXIT_BTN;
+    if (is_button_clicked (&btn1)) return GO_PATCH_BTN;
+    if (is_button_clicked (&btn2)) return EXIT_BTN;
     
     return 0;
 }
@@ -147,32 +151,33 @@ int bin_patch(const char* filename, int *nextScreen)
     size_t hash_original = ORIG_HASH;
     size_t hash_patched  = PATHCED_HASH;
 
-    size_t hash = hash_file(filename);
+    size_t hash = hash_file (filename);
 
     if (hash == hash_original)
     {
-        draw_centered_text("DO YOU WANT TO PATCH FILE?", 100, 50, TX_GREEN);
+        draw_centered_text ("DO YOU WANT TO PATCH FILE?", 100, 50, TX_GREEN);
 
-        static Button btn1 = create_button(150, 420, 400, 500, TX_GREEN, "Yes");
-        static Button btn2 = create_button(515, 420, 765, 500, TX_RED, "Ret main menu");
-        static Button btn3 = create_button(815, 20, 895, 60, TX_RED, "EXIT");
-        draw_button(&btn1);
-        draw_button(&btn2);
-        draw_button(&btn3);
+        static Button btn1 = create_button (150, 420, 400, 500, TX_GREEN, "Yes");
+        static Button btn2 = create_button (515, 420, 765, 500, TX_RED, "Ret main menu");
+        static Button btn3 = create_button (815, 20, 895, 60, TX_RED, "EXIT");
+
+        draw_button (&btn1);
+        draw_button (&btn2);
+        draw_button (&btn3);
         
-        if (is_button_clicked(&btn1)) 
+        if (is_button_clicked (&btn1)) 
         {
-            *nextScreen = patcher(filename, YES_PATCH);
+            *nextScreen = patcher (filename, YES_PATCH);
             return 1;
         }
 
-        if (is_button_clicked(&btn2)) 
+        if (is_button_clicked (&btn2)) 
         {
             *nextScreen = MAIN_MENU;
             return 1;
         }
 
-        if (is_button_clicked(&btn3)) 
+        if (is_button_clicked (&btn3)) 
         {
             *nextScreen = EXIT_BTN;
             return 1;
@@ -183,27 +188,27 @@ int bin_patch(const char* filename, int *nextScreen)
     {
         draw_centered_text("DO YOU WANT TO UNPATCH FILE?", 100, 50, TX_GREEN);
 
-        static Button btn1 = create_button(150, 420, 400, 500, TX_GREEN, "Yes");
-        static Button btn2 = create_button(515, 420, 765, 500, TX_RED, "Ret main menu");
-        static Button btn3 = create_button(815, 20, 895, 60, TX_RED, "EXIT");
+        static Button btn1 = create_button (150, 420, 400, 500, TX_GREEN, "Yes");
+        static Button btn2 = create_button (515, 420, 765, 500, TX_RED, "Ret main menu");
+        static Button btn3 = create_button (815, 20, 895, 60, TX_RED, "EXIT");
 
-        draw_button(&btn1);
-        draw_button(&btn2);
-        draw_button(&btn3);
+        draw_button (&btn1);
+        draw_button (&btn2);
+        draw_button (&btn3);
         
-        if (is_button_clicked(&btn1)) 
+        if (is_button_clicked (&btn1)) 
         {
-            *nextScreen = patcher(filename, YES_UNPATCH);
+            *nextScreen = patcher (filename, YES_UNPATCH);
             return 1;
         }
 
-        if (is_button_clicked(&btn2)) 
+        if (is_button_clicked (&btn2)) 
         {
             *nextScreen = MAIN_MENU;
             return 1;
         }
 
-        if (is_button_clicked(&btn3)) 
+        if (is_button_clicked (&btn3)) 
         {
             *nextScreen = EXIT_BTN;
             return 1;
@@ -212,21 +217,21 @@ int bin_patch(const char* filename, int *nextScreen)
 
     else
     {
-        draw_centered_text("FILE IS BROKEN", 100, 72, TX_RED);
+        draw_centered_text ("FILE IS BROKEN", 100, 72, TX_RED);
 
-        static Button btn2 = create_button(257, 420, 657, 500, TX_GREEN, "Ret main menu");
-        static Button btn3 = create_button(815, 20, 895, 60, TX_RED, "EXIT");
+        static Button btn2 = create_button (257, 420, 657, 500, TX_GREEN, "Ret main menu");
+        static Button btn3 = create_button (815, 20, 895, 60, TX_RED, "EXIT");
 
-        draw_button(&btn2);
-        draw_button(&btn3);
+        draw_button (&btn2);
+        draw_button (&btn3);
 
-        if (is_button_clicked(&btn2)) 
+        if (is_button_clicked (&btn2)) 
         {
             *nextScreen = MAIN_MENU;
             return 1;
         }
 
-        if (is_button_clicked(&btn3)) 
+        if (is_button_clicked (&btn3)) 
         {
             *nextScreen = EXIT_BTN;
             return 1;
@@ -236,7 +241,7 @@ int bin_patch(const char* filename, int *nextScreen)
     return 0;
 }
 
-size_t hash_file(const char *filename)
+size_t hash_file (const char *filename)
 {
     size_t hash = 5381;
 
@@ -252,16 +257,17 @@ size_t hash_file(const char *filename)
     return hash;
 }
 
-int patcher(const char *filename, int selection)
+int patcher (const char *filename, int selection)
 {
     FILE *file = fopen(filename, "r+b");
     
-    if (!file) {
-        printf("Ошибка открытия файла\n");
+    if (!file)
+    {
+        printf("ERROR FILE OPEN\n");
         return MAIN_MENU;
     }
     
-    fseek(file, 143, SEEK_SET);
+    fseek (file, 143, SEEK_SET);
 
     if (selection == YES_PATCH)
     {
@@ -272,46 +278,46 @@ int patcher(const char *filename, int selection)
     
     if (selection == YES_UNPATCH)
     {
-        fputc(0x74, file);
-        fclose(file);
+        fputc (0x74, file);
+        fclose (file);
         return SUCCESS_UNPTCH;
     }
     
-    fclose(file);
+    fclose (file);
     return MAIN_MENU;
 }
 
 
-void animation(const char* text, int* currentScreen)
+void animation (const char* text, int* currentScreen)
 {
     static int current_frame = 1;
-    char filepath[64];
+    char filepath[100];
     
-    sprintf(filepath, "frames/hacker%04d.bmp", current_frame);
+    sprintf (filepath, "frames/hacker%04d.bmp", current_frame);
 
-    HDC anim_frame = txLoadImage(filepath);
+    HDC anim_frame = txLoadImage (filepath);
   
-    txBitBlt(txDC(), 0, 0, 0, 0, anim_frame, 0, 0);
-    txDeleteDC(anim_frame);
+    txBitBlt (txDC(), 0, 0, 0, 0, anim_frame, 0, 0);
+    txDeleteDC (anim_frame);
     
     current_frame++;
     if (current_frame > 317) current_frame = 1;
 
-    draw_centered_text(text, 100, 72, TX_GREEN);
+    draw_centered_text (text, 100, 72, TX_GREEN);
 
-    static Button btn2 = create_button(257, 450, 657, 530, TX_GREEN, "Ret main menu");
-    static Button btn3 = create_button(815, 20, 895, 60, TX_RED, "EXIT");
+    static Button btn2 = create_button (257, 450, 657, 530, TX_GREEN, "Ret main menu");
+    static Button btn3 = create_button (815, 20, 895, 60, TX_RED, "EXIT");
 
-    draw_button(&btn2);
-    draw_button(&btn3);
+    draw_button (&btn2);
+    draw_button (&btn3);
 
-    if (is_button_clicked(&btn2)) 
+    if (is_button_clicked (&btn2)) 
     {
         *currentScreen = MAIN_MENU;
         current_frame = 1;
     }
 
-    if (is_button_clicked(&btn3)) 
+    if (is_button_clicked (&btn3)) 
     {
         *currentScreen = EXIT_BTN;
     }
@@ -321,7 +327,7 @@ void animation(const char* text, int* currentScreen)
 // ===================================================== КНОПКИ =============================================================
 
 
-    Button create_button(double x1, double y1, double x2, double y2, COLORREF color, const char* text)
+    Button create_button (double x1, double y1, double x2, double y2, COLORREF color, const char* text)
 {
     Button btn = {};
     btn.x0 = x1;
