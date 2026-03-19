@@ -29,27 +29,23 @@ struct Button
 // ========================================================= ПРОТОТИПЫ ===========================================================
 
 
-Button create_button(double x1, double y1, double x2, double y2, COLORREF color, const char* text);
+Button create_button (double x1, double y1, double x2, double y2, COLORREF color, const char* text);
 
-void draw_button(Button *btn);
+void draw_button (Button *btn);
 
-bool is_button_clicked(Button *btn);
+bool is_button_clicked (Button *btn);
 
-int main_menu();
+int main_menu ();
 
-int bin_patch(const char* filename, int *nextScreen);
+int bin_patch (const char* filename, int *nextScreen);
 
-void draw_centered_text(const char* text, int y, int fontSize, COLORREF color);
+void draw_centered_text (const char* text, int y, int fontSize, COLORREF color);
 
-size_t hash_file(const char *filename);
+size_t hash_file (const char *filename);
 
-int patcher(const char *filename, int selection);
+int patcher (const char *filename, int selection);
 
-void success_patched(int *currentScreen);
-
-void success_unpatched(int *currentScreen);
-
-void animation(const char* text_overlay, int* currentScreen);
+void animation (const char* text, int* currentScreen);
 
 
 // ======================================================= MAIN ============================================================
@@ -108,17 +104,17 @@ int main(int argc, char *argv[])
 
         else if (currentScreen == SUCCESS_PTCH)
         {
-            success_patched(&currentScreen);
+            animation("SUCCESS PATCHED", &currentScreen);
             if (currentScreen == EXIT_BTN) break;
         }
 
         else if (currentScreen == SUCCESS_UNPTCH)
         {
-            success_unpatched(&currentScreen);
+            animation("SUCCESS UNPATCHED", &currentScreen);
             if (currentScreen == EXIT_BTN) break;
         }
         
-        txSleep(10);
+        txSleep(1);
     }
 
     txDeleteDC(back);
@@ -169,11 +165,13 @@ int bin_patch(const char* filename, int *nextScreen)
             *nextScreen = patcher(filename, YES_PATCH);
             return 1;
         }
+
         if (is_button_clicked(&btn2)) 
         {
             *nextScreen = MAIN_MENU;
             return 1;
         }
+
         if (is_button_clicked(&btn3)) 
         {
             *nextScreen = EXIT_BTN;
@@ -198,11 +196,13 @@ int bin_patch(const char* filename, int *nextScreen)
             *nextScreen = patcher(filename, YES_UNPATCH);
             return 1;
         }
+
         if (is_button_clicked(&btn2)) 
         {
             *nextScreen = MAIN_MENU;
             return 1;
         }
+
         if (is_button_clicked(&btn3)) 
         {
             *nextScreen = EXIT_BTN;
@@ -225,6 +225,7 @@ int bin_patch(const char* filename, int *nextScreen)
             *nextScreen = MAIN_MENU;
             return 1;
         }
+        
         if (is_button_clicked(&btn3)) 
         {
             *nextScreen = EXIT_BTN;
@@ -280,17 +281,8 @@ int patcher(const char *filename, int selection)
     return MAIN_MENU;
 }
 
-void success_patched(int *currentScreen)
-{
-    animation("SUCCESS PATCHED", currentScreen);
-}
 
-void success_unpatched(int *currentScreen)
-{
-    animation("SUCCESS UNPATCHED", currentScreen);
-}
-
-void animation(const char* text_overlay, int* currentScreen)
+void animation(const char* text, int* currentScreen)
 {
     static int current_frame = 1;
     char filepath[64];
@@ -305,7 +297,7 @@ void animation(const char* text_overlay, int* currentScreen)
     current_frame++;
     if (current_frame > 317) current_frame = 1;
 
-    draw_centered_text(text_overlay, 100, 72, TX_GREEN);
+    draw_centered_text(text, 100, 72, TX_GREEN);
 
     static Button btn2 = create_button(257, 450, 657, 530, TX_GREEN, "Ret main menu");
     static Button btn3 = create_button(815, 20, 895, 60, TX_RED, "EXIT");
